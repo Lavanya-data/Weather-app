@@ -1,4 +1,4 @@
-# 🌦️ Weather App — Python Flask + OpenWeatherMap API
+#  Weather App — Python Flask + OpenWeatherMap API
 
 A real-time weather application that fetches live weather data using the OpenWeatherMap API.
 
@@ -7,15 +7,15 @@ A real-time weather application that fetches live weather data using the OpenWea
 
 ---
 
-## ✨ Features
-- 🔍 Search weather for ANY city in the world
-- 🌡️ Temperature, Feels Like, Min/Max
-- 💧 Humidity, Wind Speed, Pressure, Visibility
-- ⚡ Quick search buttons for popular Indian cities
-- 🎨 Beautiful dark UI with weather icons
-- ⚠️ Proper error handling for wrong city names
+##  Features
+-  Search weather for ANY city in the world
+-  Temperature, Feels Like, Min/Max
+-  Humidity, Wind Speed, Pressure, Visibility
+-  Quick search buttons for popular Indian cities
+-  Beautiful dark UI with weather icons
+-  Proper error handling for wrong city names
 
-## 🛠️ Tech Concepts Used
+##  Tech Concepts Used
 | Concept | Where Used |
 |---|---|
 | REST API call | requests.get() to OpenWeatherMap |
@@ -24,7 +24,7 @@ A real-time weather application that fetches live weather data using the OpenWea
 | Jinja2 templating | Displaying data in HTML |
 | Error handling | try-except for API errors |
 
-## 🚀 How to Run
+##  How to Run
 
 ### Step 1 — Get FREE API Key
 1. Go to https://openweathermap.org/
@@ -50,4 +50,4 @@ python app.py
 Open: **http://127.0.0.1:5000**
 
 ---
-*Built as Project 3 of 30-day learning challenge · 2026*
+
