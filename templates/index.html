@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App — Setti Lavanya</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    /* ── HEADER ── */
+    .header { text-align: center; margin-bottom: 36px; }
+    .header h1 { font-size: 2.2rem; color: white; font-weight: 700; letter-spacing: 1px; }
+    .header p  { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 6px; }
+
+    /* ── SEARCH BOX ── */
+    .search-box {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 32px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 50px;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+      backdrop-filter: blur(10px);
+    }
+    .search-box input::placeholder { color: rgba(255,255,255,0.4); }
+    .search-box input:focus { border-color: rgba(255,255,255,0.5); }
+    .search-box button {
+      padding: 14px 28px;
+      border-radius: 50px;
+      border: none;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .search-box button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.5); }
+
+    /* ── ERROR MESSAGE ── */
+    .error-box {
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.4);
+      color: #fca5a5;
+      padding: 14px 24px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ── MAIN WEATHER CARD ── */
+    .weather-card {
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 28px;
+      padding: 36px;
+      width: 100%;
+      max-width: 500px;
+      color: white;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* City & Country */
+    .city-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .city-name { font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
+    .country-badge {
+      background: rgba(255,255,255,0.12);
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    /* Main Temperature */
+    .temp-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .weather-emoji { font-size: 4rem; }
+    .temperature { font-size: 5rem; font-weight: 300; line-height: 1; }
+    .temp-unit   { font-size: 2rem; color: rgba(255,255,255,0.5); align-self: flex-start; margin-top: 10px; }
+
+    .description { font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 6px; text-transform: capitalize; }
+    .feels-like  { font-size: 0.85rem; color: rgba(255,255,255,0.45); margin-bottom: 28px; }
+
+    /* Min/Max */
+    .minmax {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .minmax-item {
+      background: rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 0.85rem;
+    }
+    .minmax-label { color: rgba(255,255,255,0.45); font-size: 0.75rem; margin-bottom: 2px; }
+    .minmax-val   { font-weight: 700; font-size: 1rem; }
+
+    /* Divider */
+    .divider { height: 1px; background: rgba(255,255,255,0.08); margin-bottom: 24px; }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .stat-item {
+      background: rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.2s;
+    }
+    .stat-item:hover { background: rgba(255,255,255,0.1); }
+    .stat-icon  { font-size: 1.5rem; }
+    .stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .stat-val   { font-size: 1rem; font-weight: 700; }
+
+    /* ── POPULAR CITIES ── */
+    .quick-cities {
+      margin-top: 28px;
+      width: 100%;
+      max-width: 500px;
+    }
+    .quick-cities p { color: rgba(255,255,255,0.4); font-size: 0.8rem; text-align: center; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .city-buttons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .city-btn {
+      padding: 8px 18px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50px;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.82rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .city-btn:hover { background: rgba(102,126,234,0.3); border-color: rgba(102,126,234,0.5); color: white; }
+
+    /* ── FOOTER ── */
+    .footer { margin-top: 32px; color: rgba(255,255,255,0.25); font-size: 0.8rem; text-align: center; }
+    .footer span { color: rgba(255,255,255,0.45); }
+
+    @media (max-width: 480px) {
+      .temperature { font-size: 4rem; }
+      .weather-emoji { font-size: 3rem; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🌍 Weather App</h1>
+    <p>Built by Setti Lavanya · Python Flask + OpenWeatherMap API</p>
+  </div>
+
+  <!-- Search Form -->
+  <form class="search-box" method="POST" action="/">
+    <input
+      type="text"
+      name="city"
+      placeholder="Search any city... (e.g. Mumbai, London)"
+      value="{{ city }}"
+      autocomplete="off"
+    />
+    <button type="submit">Search</button>
+  </form>
+
+  <!-- Error Message (shown only if there is an error) -->
+  {% if error %}
+    <div class="error-box">⚠️ {{ error }}</div>
+  {% endif %}
+
+  <!-- Weather Card (shown only if weather data is available) -->
+  {% if weather %}
+  <div class="weather-card">
+
+    <!-- City Name + Country -->
+    <div class="city-row">
+      <div>
+        <div class="city-name">{{ weather.city }}</div>
+        <span class="country-badge">{{ weather.country }}</span>
+      </div>
+      <!-- Official weather icon from OpenWeatherMap -->
+      <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png"
+           alt="{{ weather.description }}" width="64" height="64"/>
+    </div>
+
+    <!-- Temperature + Emoji -->
+    <div class="temp-row">
+      <span class="weather-emoji">{{ weather.emoji }}</span>
+      <span class="temperature">{{ weather.temperature }}</span>
+      <span class="temp-unit">°C</span>
+    </div>
+
+    <div class="description">{{ weather.description }}</div>
+    <div class="feels-like">Feels like {{ weather.feels_like }}°C</div>
+
+    <!-- Min / Max Temperature -->
+    <div class="minmax">
+      <div class="minmax-item">
+        <div class="minmax-label">Min Temp</div>
+        <div class="minmax-val">{{ weather.min_temp }}°C</div>
+      </div>
+      <div class="minmax-item">
+        <div class="minmax-label">Max Temp</div>
+        <div class="minmax-val">{{ weather.max_temp }}°C</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-icon">💧</span>
+        <div>
+          <div class="stat-label">Humidity</div>
+          <div class="stat-val">{{ weather.humidity }}%</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">💨</span>
+        <div>
+          <div class="stat-label">Wind Speed</div>
+          <div class="stat-val">{{ weather.wind_speed }} km/h</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">🌡️</span>
+        <div>
+          <div class="stat-label">Pressure</div>
+          <div class="stat-val">{{ weather.pressure }} hPa</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">👁️</span>
+        <div>
+          <div class="stat-label">Visibility</div>
+          <div class="stat-val">{{ weather.visibility }} km</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% endif %}
+
+  <!-- Quick City Buttons -->
+  <div class="quick-cities">
+    <p>Quick Search</p>
+    <div class="city-buttons">
+      {% for c in ["Visakhapatnam","Hyderabad","Mumbai","Delhi","Chennai","Bangalore","Kolkata","London","New York","Tokyo"] %}
+        <form method="POST" action="/" style="display:inline">
+          <input type="hidden" name="city" value="{{ c }}"/>
+          <button type="submit" class="city-btn">{{ c }}</button>
+        </form>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="footer">
+    Built by <span>Setti Lavanya</span> · Data from OpenWeatherMap API
+  </div>
+
+</body>
+</html>
